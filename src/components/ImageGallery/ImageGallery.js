@@ -2,9 +2,9 @@ import ImageGalleryItem from "../ImageGalleryItem/ImageGalleryItem";
 import s from "../ImageGallery/ImageGallery.module.css";
 import PropTypes from 'prop-types';
 
-function ImageGallery({images, onClick}) {
+const ImageGallery =({images, onClick})=> {
     return (
-        <ul className={s.ImageGallery}>
+        <ul className={s.ImageGallery} onClick={onClick}>
             {images.map(({ id, tags, webformatURL, largeImageURL }) => {
                 return (
                     <ImageGalleryItem
@@ -12,7 +12,6 @@ function ImageGallery({images, onClick}) {
                         tags={tags}
                         webformatURL={webformatURL}
                         largeImageURL={largeImageURL}
-                        openModal={onClick}
                     />   
                 )
             })}

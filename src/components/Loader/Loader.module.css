@@ -4,7 +4,7 @@
     border-radius: 50%;
     display: inline-block;
     position: relative;
-    border: 2px solid #FF3D00;
+    border: 2px solid rgb(77, 0, 128);
     box-sizing: border-box;
     animation: rotation 1s linear infinite;
     margin-right: auto;

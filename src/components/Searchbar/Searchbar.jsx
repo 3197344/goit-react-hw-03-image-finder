@@ -35,7 +35,9 @@ export class SearchBar extends Component {
                         type="submit"
                         className={s.SearchFormButton}
                         onSubmit={this.handlerSubmit}>
-                        <span className={s.SearchFormButtonLabel}>Search</span>
+                        <span
+                            className={s.SearchFormButtonLabel}>
+                            Search</span>
                     </button>
 
                     <input
@@ -44,7 +46,7 @@ export class SearchBar extends Component {
                         autoComplete="off"
                         autoFocus
                         placeholder="Search images and photos"
-                        value={this.state.searchInput}
+                        searchInput={this.state.searchInput}
                         onChange={this.handlerOnChange}
                     />
                 </form>

@@ -6,10 +6,7 @@ import s from "../Modal/Modal.module.css";
 const modalRoot = document.querySelector('#modal-root');
 
 export class Modal extends Component {
-    state = {
-        loading: false,
-    }
-
+    
     static propTypes = {
     onClose: PropTypes.func.isRequired,
     src: PropTypes.string.isRequired,
@@ -44,12 +41,10 @@ export class Modal extends Component {
                     <img
                         className={s.modalImg}
                         src={src}
-                        alt={alt}>
-                    </img> 
+                        alt={alt}/>
                 </div>
             </div>,
-            modalRoot,
-        );
+            modalRoot);
     }
 };
 
