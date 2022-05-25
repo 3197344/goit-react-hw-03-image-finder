@@ -17,7 +17,9 @@ export class App extends Component {
     largeImg: null,
     status: 'idle',
     error: null,
+    modalImg: null,
     showModal: false,
+    tags: '',
   };
 
   componentDidUpdate(prevProps, prevState) {
@@ -25,8 +27,8 @@ export class App extends Component {
     const API_GET = 'https://pixabay.com/api/?';
     const { imgName, page } = this.state;
 
-    if (prevState.imgName !== imgName) {
-      this.setState({ status: 'pending' });
+    if (prevState.imgName !== this.state.imgName && this.state.imgName !== '') {
+      this.setState({ status: 'pending', page: 1 });
       fetch(
         `${API_GET}q=${imgName}&key=${API_KEY}&page=${page}&image_type=photo&orientation=horizontal&per_page=12`
       )
@@ -131,7 +133,10 @@ export class App extends Component {
           <SearchBar onSubmit={this.handlerSubmit} />
           <ImageGallery images={imgArray} onClick={this.handleForModal} />
           {imgArray && <Button loadImages={this.handleButton} />}
-          {showModal && <Modal largeImg={largeImg} onClose={this.toggleModal} />}
+          {showModal && <Modal
+            largeImg={largeImg}
+            onClose={this.toggleModal}
+          />}
         </div>
       );
     }
