@@ -30,11 +30,11 @@ export class SearchBar extends Component {
     render() {
         return (
             <header className={s.Searchbar}>
-                <form  className={s.SearchForm}>
+                <form  className={s.SearchForm} onSubmit={this.handlerSubmit}>
                     <button
                         type="submit"
                         className={s.SearchFormButton}
-                        onSubmit={this.handlerSubmit}>
+                        >
                         <span
                             className={s.SearchFormButtonLabel}>
                             Search</span>

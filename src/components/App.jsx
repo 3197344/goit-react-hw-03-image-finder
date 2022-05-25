@@ -9,7 +9,7 @@ import axios from 'axios';
 // import { toast } from 'react-toastify';
 // import 'react-toastify/dist/ReactToastify.css';
 
-export class App extends Component{
+export class App extends Component {
   state = {
     imgName: '',
     page: 1,
@@ -17,14 +17,14 @@ export class App extends Component{
     largeImg: null,
     status: 'idle',
     error: null,
-    showModal: false,    
+    showModal: false,
   };
 
-componentDidUpdate(prevProps, prevState) {
-  const API_KEY = '7652668-fcb425495cfb1d754d33171ff';
-  const API_GET = 'https://pixabay.com/api/?';
-  const { imgName, page } = this.state;
-  
+  componentDidUpdate(prevProps, prevState) {
+    const API_KEY = '7652668-fcb425495cfb1d754d33171ff';
+    const API_GET = 'https://pixabay.com/api/?';
+    const { imgName, page } = this.state;
+
     if (prevState.imgName !== imgName) {
       this.setState({ status: 'pending' });
       fetch(
@@ -35,21 +35,21 @@ componentDidUpdate(prevProps, prevState) {
             return res.json();
           }
           return Promise.reject(
-            new Error(`Ничего не найдено по запросу ${imgName}`)
+            new Error(`Do not find ${imgName}`)
           );
         })
         .then(res => {
           if (res.hits.length === 0) {
             return this.setState({
-              error: `Ничего не найдено по запросу ${imgName}`,
+              error: `Do not find ${imgName}`,
               status: 'rejected',
             });
           }
-          return this.setState({ imgArray: res.hits.map(({id, webformatURL, largeImageURL })=>({id,webformatURL,largeImageURL})), status: 'resolved' });
+          return this.setState({ imgArray: res.hits.map(({ id, webformatURL, largeImageURL }) => ({ id, webformatURL, largeImageURL })), status: 'resolved' });
         })
         .catch(err => this.setState({ error: err, status: 'rejected' }));
       this.setState(prev => ({ page: prev.page + 1 }));
-    };    
+    };
   };
 
   reset() {
@@ -63,31 +63,31 @@ componentDidUpdate(prevProps, prevState) {
   handlerSubmit = value => {
     this.setState({
       imgName: value,
-      page:1
-    });    
+      page: 1
+    });
   };
 
   handleButton = () => {
     const API_KEY = '7652668-fcb425495cfb1d754d33171ff';
     const API_GET = 'https://pixabay.com/api/?';
     this.setState({ status: 'pending' });
-    this.setState(prev => ({ page: prev.page + 1 })); 
-    const { imgArray, imgName, page } = this.state;       
-      axios
-        .get(
-          `${API_GET}q=${imgName}&key=${API_KEY}&page=${page}&image_type=photo&orientation=horizontal&per_page=12`
-        )
-        .then(res => {
-          const { total, hits } = res.data;          
-          if (total !== imgArray.length) {
-            return this.setState(prev => ({
-              imgArray: [...prev.imgArray, ...hits.map(({ id, webformatURL, largeImageURL }) => ({ id, webformatURL, largeImageURL }))],
-              status: "resolved"
-            }));
-          }
-          return this.setState({ status: 'resolveWithoutButton' });
-        })
-        .catch(err => this.setState({ error: err, status: 'rejected' }));
+    this.setState(prev => ({ page: prev.page + 1 }));
+    const { imgArray, imgName, page } = this.state;
+    axios
+      .get(
+        `${API_GET}q=${imgName}&key=${API_KEY}&page=${page}&image_type=photo&orientation=horizontal&per_page=12`
+      )
+      .then(res => {
+        const { total, hits } = res.data;
+        if (total !== imgArray.length) {
+          return this.setState(prev => ({
+            imgArray: [...prev.imgArray, ...hits.map(({ id, webformatURL, largeImageURL }) => ({ id, webformatURL, largeImageURL }))],
+            status: "resolved"
+          }));
+        }
+        return this.setState({ status: 'resolveWithoutButton' });
+      })
+      .catch(err => this.setState({ error: err, status: 'rejected' }));
   };
 
   handleForModal = e => {
@@ -105,11 +105,11 @@ componentDidUpdate(prevProps, prevState) {
       );
     }
 
-    if (status === 'pending') {      
+    if (status === 'pending') {
       return (
         <div className={s.app}>
           <SearchBar onSubmit={this.handlerSubmit} />
-          {imgArray&&<ImageGallery images={imgArray} onClick={this.handleForModal} />}
+          {imgArray && <ImageGallery images={imgArray} onClick={this.handleForModal} />}
           <Loader />
           <p style={{ textAlign: 'center', fontSize: 30 }}>Loading...</p>
         </div>
@@ -131,7 +131,7 @@ componentDidUpdate(prevProps, prevState) {
           <SearchBar onSubmit={this.handlerSubmit} />
           <ImageGallery images={imgArray} onClick={this.handleForModal} />
           {imgArray && <Button loadImages={this.handleButton} />}
-          {showModal &&<Modal largeImg={largeImg} onClose={this.toggleModal} />}
+          {showModal && <Modal largeImg={largeImg} onClose={this.toggleModal} />}
         </div>
       );
     }
@@ -141,8 +141,8 @@ componentDidUpdate(prevProps, prevState) {
         <div className={s.app}>
           <SearchBar onSubmit={this.handlerSubmit} />
           <ImageGallery images={imgArray} onClick={this.handleForModal} />
-          <p style={{ textAlign: 'center', fontSize: 30 }}>На этом пока ВСЕ!</p>
-          {showModal &&<Modal largeImg={largeImg} onClose={this.toggleModal} />}
+          <p style={{ textAlign: 'center', fontSize: 30 }}>It is the end!</p>
+          {showModal && <Modal largeImg={largeImg} onClose={this.toggleModal} />}
         </div>
       );
     }
