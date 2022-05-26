@@ -58,8 +58,13 @@ export class App extends Component {
     this.setState({ page: 1 });
   }
 
-  toggleModal = () => {
-    this.setState(({ showModal }) => ({ showModal: !showModal }));
+  toggleModal = (modalImg = null, tags = '') => {
+    // this.setState(({ showModal }) => ({ showModal: !showModal }));
+    this.setState(prevState => ({
+      showModal: !prevState.showModal,
+      modalImg,
+      tags,
+    }));
   };
 
   handlerSubmit = value => {
@@ -98,7 +103,7 @@ export class App extends Component {
   };
 
   render() {
-    const { status, error, imgArray, largeImg, showModal } = this.state;
+    const { status,  modalImg, tags, error, imgArray, largeImg, showModal } = this.state;
     if (status === 'idle') {
       return (
         <div className={s.app}>
@@ -111,7 +116,7 @@ export class App extends Component {
       return (
         <div className={s.app}>
           <SearchBar onSubmit={this.handlerSubmit} />
-          {imgArray && <ImageGallery images={imgArray} onClick={this.handleForModal} />}
+          {imgArray && <ImageGallery images={imgArray} onClick={this.toggleModal} />}
           <Loader />
           <p style={{ textAlign: 'center', fontSize: 30 }}>Loading...</p>
         </div>
@@ -131,7 +136,7 @@ export class App extends Component {
       return (
         <div className={s.app}>
           <SearchBar onSubmit={this.handlerSubmit} />
-          <ImageGallery images={imgArray} onClick={this.handleForModal} />
+          <ImageGallery images={imgArray} onClick={this.toggleModal} />
           {imgArray && <Button loadImages={this.handleButton} />}
           {showModal && <Modal
             largeImg={largeImg}
@@ -145,9 +150,13 @@ export class App extends Component {
       return (
         <div className={s.app}>
           <SearchBar onSubmit={this.handlerSubmit} />
-          <ImageGallery images={imgArray} onClick={this.handleForModal} />
+          <ImageGallery images={imgArray} onClick={this.toggleModal} />
           <p style={{ textAlign: 'center', fontSize: 30 }}>It is the end!</p>
-          {showModal && <Modal largeImg={largeImg} onClose={this.toggleModal} />}
+          {showModal &&
+            <Modal
+              modalImg={modalImg}
+              onClose={this.toggleModal}
+              tags={tags} />}
         </div>
       );
     }
