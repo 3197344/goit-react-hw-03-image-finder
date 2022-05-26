@@ -116,7 +116,7 @@ export class App extends Component {
       return (
         <div className={s.app}>
           <SearchBar onSubmit={this.handlerSubmit} />
-          {imgArray && <ImageGallery images={imgArray} onClick={this.toggleModal} />}
+          {imgArray && <ImageGallery images={imgArray} onClick={this.handleForModal} />}
           <Loader />
           <p style={{ textAlign: 'center', fontSize: 30 }}>Loading...</p>
         </div>
@@ -136,7 +136,7 @@ export class App extends Component {
       return (
         <div className={s.app}>
           <SearchBar onSubmit={this.handlerSubmit} />
-          <ImageGallery images={imgArray} onClick={this.toggleModal} />
+          <ImageGallery images={imgArray} onClick={this.handleForModal} />
           {imgArray && <Button loadImages={this.handleButton} />}
           {showModal && <Modal
             largeImg={largeImg}
@@ -150,7 +150,7 @@ export class App extends Component {
       return (
         <div className={s.app}>
           <SearchBar onSubmit={this.handlerSubmit} />
-          <ImageGallery images={imgArray} onClick={this.toggleModal} />
+          <ImageGallery images={imgArray} onClick={this.handleForModal} />
           <p style={{ textAlign: 'center', fontSize: 30 }}>It is the end!</p>
           {showModal &&
             <Modal
