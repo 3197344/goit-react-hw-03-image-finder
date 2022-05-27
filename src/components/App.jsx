@@ -5,7 +5,7 @@ import Loader from './Loader/Loader';
 import Button from "./Button/Button";
 import Modal from "./Modal/Modal";
 import s from '../components/App.module.css';
-import axios from 'axios';
+// import axios from 'axios';
 // import { toast } from 'react-toastify';
 // import 'react-toastify/dist/ReactToastify.css';
 
@@ -13,7 +13,7 @@ export class App extends Component {
   state = {
     imgName: '',
     page: 1,
-    imgArray: null,
+    imgArray: [],
     largeImg: null,
     status: 'idle',
     error: null,
@@ -27,8 +27,8 @@ export class App extends Component {
     const API_GET = 'https://pixabay.com/api/?';
     const { imgName, page } = this.state;
 
-    if (prevState.imgName !== this.state.imgName && this.state.imgName !== '') {
-      this.setState({ status: 'pending', page: 1 });
+    if (this.state.status === "pending") {
+     setTimeout(() => {
       fetch(
         `${API_GET}q=${imgName}&key=${API_KEY}&page=${page}&image_type=photo&orientation=horizontal&per_page=12`
       )
@@ -47,10 +47,12 @@ export class App extends Component {
               status: 'rejected',
             });
           }
-          return this.setState({ imgArray: res.hits.map(({ id, webformatURL, largeImageURL }) => ({ id, webformatURL, largeImageURL })), status: 'resolved' });
+          return this.setState(prev => ({ imgArray: [...prev.imgArray,...res.hits], status: 'resolved' }));
         })
         .catch(err => this.setState({ error: err, status: 'rejected' }));
-      this.setState(prev => ({ page: prev.page + 1 }));
+      
+     }, 300);
+      
     };
   };
 
@@ -58,52 +60,42 @@ export class App extends Component {
     this.setState({ page: 1 });
   }
 
-  toggleModal = (modalImg = null, tags = '') => {
-    // this.setState(({ showModal }) => ({ showModal: !showModal }));
+  toggleModal = (e) => {
+    if (e) {
+      const url = e.currentTarget.dataset.url
+ 
     this.setState(prevState => ({
       showModal: !prevState.showModal,
-      modalImg,
-      tags,
+      largeImg: url
     }));
+    return
+    }
+    this.setState(prevState => ({
+      showModal: !prevState.showModal,}))
   };
 
   handlerSubmit = value => {
     this.setState({
       imgName: value,
-      page: 1
+      page: 1,
+      status: 'pending'
     });
   };
 
-  handleButton = () => {
-    const API_KEY = '7652668-fcb425495cfb1d754d33171ff';
-    const API_GET = 'https://pixabay.com/api/?';
-    this.setState({ status: 'pending' });
-    this.setState(prev => ({ page: prev.page + 1 }));
-    const { imgArray, imgName, page } = this.state;
-    axios
-      .get(
-        `${API_GET}q=${imgName}&key=${API_KEY}&page=${page}&image_type=photo&orientation=horizontal&per_page=12`
-      )
-      .then(res => {
-        const { total, hits } = res.data;
-        if (total !== imgArray.length) {
-          return this.setState(prev => ({
-            imgArray: [...prev.imgArray, ...hits.map(({ id, webformatURL, largeImageURL }) => ({ id, webformatURL, largeImageURL }))],
-            status: "resolved"
-          }));
-        }
-        return this.setState({ status: 'resolveWithoutButton' });
-      })
-      .catch(err => this.setState({ error: err, status: 'rejected' }));
+  handleButton = (e) => {
+    
+    this.setState(prev => ({ 
+      page: prev.page + 1,
+      status: 'pending'
+    }));
+    
   };
 
-  handleForModal = e => {
-    this.setState({ largeImg: e.target.alt });
-    this.toggleModal();
-  };
+ 
 
   render() {
-    const { status,  modalImg, tags, error, imgArray, largeImg, showModal } = this.state;
+    const { status,  error, imgArray, largeImg, showModal } = this.state;
+ 
     if (status === 'idle') {
       return (
         <div className={s.app}>
@@ -115,8 +107,7 @@ export class App extends Component {
     if (status === 'pending') {
       return (
         <div className={s.app}>
-          <SearchBar onSubmit={this.handlerSubmit} />
-          {imgArray && <ImageGallery images={imgArray} onClick={this.handleForModal} />}
+          <ImageGallery images={imgArray} onClick={this.toggleModal} />
           <Loader />
           <p style={{ textAlign: 'center', fontSize: 30 }}>Loading...</p>
         </div>
@@ -136,29 +127,25 @@ export class App extends Component {
       return (
         <div className={s.app}>
           <SearchBar onSubmit={this.handlerSubmit} />
-          <ImageGallery images={imgArray} onClick={this.handleForModal} />
+          <ImageGallery images={imgArray} onClick={this.toggleModal} />
           {imgArray && <Button loadImages={this.handleButton} />}
-          {showModal && <Modal
-            largeImg={largeImg}
-            onClose={this.toggleModal}
-          />}
+          {showModal&&<Modal onClose={this.toggleModal} modalImg ={largeImg} />}
         </div>
       );
     }
+    
+    
 
     if (status === 'resolveWithoutButton') {
       return (
         <div className={s.app}>
           <SearchBar onSubmit={this.handlerSubmit} />
-          <ImageGallery images={imgArray} onClick={this.handleForModal} />
+          <ImageGallery images={imgArray} onClick={this.toggleModal} />
           <p style={{ textAlign: 'center', fontSize: 30 }}>It is the end!</p>
-          {showModal &&
-            <Modal
-              modalImg={modalImg}
-              onClose={this.toggleModal}
-              tags={tags} />}
+    
         </div>
       );
     }
+  
   }
 };

@@ -2,17 +2,16 @@ import ImageGalleryItem from "../ImageGalleryItem/ImageGalleryItem";
 import s from "../ImageGallery/ImageGallery.module.css";
 import PropTypes from 'prop-types';
 
-const ImageGallery =({images, toggleModal})=> {
+const ImageGallery =({images, onClick})=> {
     return (
         <ul className={s.ImageGallery} >
-            {images.map(({ id, tags, webformatURL, largeImageURL }) => {
+            {images.map(({ id, webformatURL, largeImageURL }) => {
                 return (
                     <ImageGalleryItem
                         key={id}
-                        tags={tags}
                         webformatURL={webformatURL}
                         largeImageURL={largeImageURL}
-                        onModalOpen={toggleModal}
+                        onModalOpen={onClick}
                     />   
                 )
             })}
@@ -23,11 +22,10 @@ const ImageGallery =({images, toggleModal})=> {
 ImageGallery.prototype = {
     images: PropTypes.arrayOf(PropTypes.shape({
         id: PropTypes.number.isRequired,
-        tags: PropTypes.string.isRequired,
         webformatURL: PropTypes.string.isRequired,
         largeImageURL: PropTypes.string.isRequired
     })),
-    toggleModal: PropTypes.func.isRequired,
+    onClick: PropTypes.func.isRequired,
 }
 
 export default ImageGallery;

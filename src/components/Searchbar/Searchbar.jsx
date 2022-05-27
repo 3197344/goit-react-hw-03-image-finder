@@ -4,11 +4,13 @@ import PropTypes from 'prop-types';
 import s from "../Searchbar/Searchbar.module.css";
 
 export class SearchBar extends Component {
-    state = {
-        searchInput: '',
-    };
+    
     static propTypes = {
         onSubmit: PropTypes.func
+    };
+
+    state = {
+        searchInput: '',
     };
 
     handlerSubmit = e => {
@@ -46,7 +48,7 @@ export class SearchBar extends Component {
                         autoComplete="off"
                         autoFocus
                         placeholder="Search images and photos"
-                        searchInput={this.state.searchInput}
+                        
                         onChange={this.handlerOnChange}
                     />
                 </form>
