@@ -5,6 +5,7 @@ import Loader from './Loader/Loader';
 import Button from "./Button/Button";
 import Modal from "./Modal/Modal";
 import s from '../components/App.module.css';
+import fetchImages from "../API/fetchImages";
 // import axios from 'axios';
 // import { toast } from 'react-toastify';
 // import 'react-toastify/dist/ReactToastify.css';
@@ -15,6 +16,7 @@ export class App extends Component {
     page: 1,
     imgArray: [],
     largeImg: null,
+    loading: false,
     status: 'idle',
     error: null,
     modalImg: null,
@@ -23,53 +25,59 @@ export class App extends Component {
   };
 
   componentDidUpdate(prevProps, prevState) {
-    const API_KEY = '7652668-fcb425495cfb1d754d33171ff';
-    const API_GET = 'https://pixabay.com/api/?';
     const { imgName, page } = this.state;
 
-    if (this.state.status === "pending") {
-     setTimeout(() => {
-      fetch(
-        `${API_GET}q=${imgName}&key=${API_KEY}&page=${page}&image_type=photo&orientation=horizontal&per_page=12`
-      )
-        .then(res => {
-          if (res.ok) {
-            return res.json();
-          }
-          return Promise.reject(
-            new Error(`Do not find ${imgName}`)
-          );
-        })
-        .then(res => {
-          if (res.hits.length === 0) {
+    if (prevState.imgName !== this.state.imgName && this.state.imgName !== '') {
+      this.setState({ imgArray: [], page: 1 });
+      this.loadImages();
+    }
+    if (prevState.page !== this.state.page && this.state.page !== 1) {
+      this.loadImages();
+    }
+  }
+
+  loadImages = () => {
+    const { page, imgName } = this.state;
+    this.setState({ loading: true, error: null });
+    fetchImages(imgName, page)
+      .then(images => {
+          const pictures = images.hits.map(
+            ({ id, webformatURL, tags, largeImg }) =>
+            ({ id, webformatURL, tags, largeImg })
+        );
+
+          if (images.hits.length === 0) {
             return this.setState({
               error: `Do not find ${imgName}`,
               status: 'rejected',
             });
           }
-          return this.setState(prev => ({ imgArray: [...prev.imgArray,...res.hits], status: 'resolved' }));
+        
+        return this.setState (prevState => ({
+          imgArray: [...prevState.imgArray, ...pictures], status: 'resolved'
+        })
+        );
         })
         .catch(err => this.setState({ error: err, status: 'rejected' }));
-      
-     }, 300);
       
     };
   };
 
-  reset() {
-    this.setState({ page: 1 });
-  }
+  // reset=()=> {
+  //   this.setState({ page: 1 });
+  // }
 
   toggleModal = (e) => {
     if (e) {
-      const url = e.currentTarget.dataset.url
- 
+    const url = e.currentTarget.dataset.url
     this.setState(prevState => ({
       showModal: !prevState.showModal,
       largeImg: url
-    }));
+      })
+    );
     return
     }
+    
     this.setState(prevState => ({
       showModal: !prevState.showModal,}))
   };
@@ -78,24 +86,21 @@ export class App extends Component {
     this.setState({
       imgName: value,
       page: 1,
-      status: 'pending'
+      status: 'pending',
+      imgArray:[]
     });
   };
 
-  handleButton = (e) => {
-    
-    this.setState(prev => ({ 
+  handleButton = () => {
+      this.setState(prev => ({ 
       page: prev.page + 1,
-      status: 'pending'
-    }));
-    
+      status: 'pending' })
+      );
   };
 
- 
-
-  render() {
+render() {
     const { status,  error, imgArray, largeImg, showModal } = this.state;
- 
+
     if (status === 'idle') {
       return (
         <div className={s.app}>
@@ -147,5 +152,4 @@ export class App extends Component {
       );
     }
   
-  }
-};
+  };
