@@ -15,6 +15,7 @@ export class App extends Component {
     imgName: '',
     page: 1,
     imgArray: [],
+    totalImg: 0,
     largeImg: null,
     loading: false,
     status: 'idle',
@@ -25,7 +26,7 @@ export class App extends Component {
   };
 
   componentDidUpdate(prevProps, prevState) {
-    const { imgName, page } = this.state;
+    // const { imgName, page } = this.state;
 
     if (prevState.imgName !== this.state.imgName && this.state.imgName !== '') {
       this.setState({ imgArray: [], page: 1 });
@@ -41,115 +42,80 @@ export class App extends Component {
     this.setState({ loading: true, error: null });
     fetchImages(imgName, page)
       .then(images => {
-          const pictures = images.hits.map(
-            ({ id, webformatURL, tags, largeImg }) =>
+        const pictures = images.hits.map(
+          ({ id, webformatURL, tags, largeImg }) =>
             ({ id, webformatURL, tags, largeImg })
         );
 
-          if (images.hits.length === 0) {
-            return this.setState({
-              error: `Do not find ${imgName}`,
-              status: 'rejected',
-            });
-          }
+        if (imgName.hits.length === 0) {
+          return this.setState({
+            error: `Do not find ${imgName}`,
+            status: 'rejected',
+          });
+        }
         
-        return this.setState (prevState => ({
-          imgArray: [...prevState.imgArray, ...pictures], status: 'resolved'
+        return this.setState(prevState => ({
+          imgArray: [...prevState.imgArray, ...pictures], 
+          // totalImg: imgArray.totalHits,
         })
         );
-        })
-        .catch(err => this.setState({ error: err, status: 'rejected' }));
+      })
+      .catch(err => this.setState({ error: err}));
       
-    };
   };
-
-  // reset=()=> {
-  //   this.setState({ page: 1 });
-  // }
-
+  
   toggleModal = (e) => {
     if (e) {
-    const url = e.currentTarget.dataset.url
-    this.setState(prevState => ({
-      showModal: !prevState.showModal,
-      largeImg: url
+      const url = e.currentTarget.dataset.url
+      this.setState(prevState => ({
+        showModal: !prevState.showModal,
+        largeImg: url
       })
-    );
-    return
+      );
+      return
     }
     
     this.setState(prevState => ({
-      showModal: !prevState.showModal,}))
+      showModal: !prevState.showModal,
+    }))
   };
 
-  handlerSubmit = value => {
+  handlerSubmit = imgName => {
     this.setState({
-      imgName: value,
+      imgName: imgName,
       page: 1,
-      status: 'pending',
-      imgArray:[]
+      imgArray: []
     });
   };
 
   handleButton = () => {
-      this.setState(prev => ({ 
+    this.setState(prev => ({
       page: prev.page + 1,
-      status: 'pending' })
-      );
+    })
+    );
   };
 
-render() {
-    const { status,  error, imgArray, largeImg, showModal } = this.state;
+  render() {
+    const { error, imgArray, showModal, modalImg, tags, loading, totalImg} = this.state;
 
-    if (status === 'idle') {
-      return (
-        <div className={s.app}>
-          <SearchBar onSubmit={this.handlerSubmit} />
-        </div>
-      );
-    }
 
-    if (status === 'pending') {
-      return (
-        <div className={s.app}>
-          <ImageGallery images={imgArray} onClick={this.toggleModal} />
-          <Loader />
-          <p style={{ textAlign: 'center', fontSize: 30 }}>Loading...</p>
-        </div>
-      );
-    }
-
-    if (status === 'rejected') {
-      return (
-        <div className={s.app}>
-          <SearchBar onSubmit={this.handlerSubmit} />
-          <p style={{ textAlign: 'center', fontSize: 30 }}>{error}</p>
-        </div>
-      );
-    }
-
-    if (status === 'resolved') {
       return (
         <div className={s.app}>
           <SearchBar onSubmit={this.handlerSubmit} />
           <ImageGallery images={imgArray} onClick={this.toggleModal} />
-          {imgArray && <Button loadImages={this.handleButton} />}
-          {showModal&&<Modal onClose={this.toggleModal} modalImg ={largeImg} />}
+          {loading && <Loader />}
+          {/* <p style={{ textAlign: 'center', fontSize: 30 }}>Loading...</p> */}
+          {imgArray.length > 0 && imgArray.length < totalImg && (
+            <Button loadImages={this.handleButton} />)}
+          {showModal && (
+            <Modal
+              onClose={this.toggleModal}
+              modalImg={modalImg}
+              tags={tags} />
+          )}
+          {error && <>{error.message}</>}
         </div>
       );
-    }
-    
-    
 
-    if (status === 'resolveWithoutButton') {
-      return (
-        <div className={s.app}>
-          <SearchBar onSubmit={this.handlerSubmit} />
-          <ImageGallery images={imgArray} onClick={this.toggleModal} />
-          <p style={{ textAlign: 'center', fontSize: 30 }}>It is the end!</p>
-    
-        </div>
-      );
-    }
-  
-  };
+  }
+}; 
