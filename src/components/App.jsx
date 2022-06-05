@@ -14,11 +14,10 @@ export class App extends Component {
   state = {
     imgName: '',
     page: 1,
-    imgArray: [],
+    images: [],
     totalImg: 0,
     largeImg: null,
     loading: false,
-    status: 'idle',
     error: null,
     modalImg: null,
     showModal: false,
@@ -26,13 +25,13 @@ export class App extends Component {
   };
 
   componentDidUpdate(prevProps, prevState) {
-    // const { imgName, page } = this.state;
+    const { images, page } = this.state;
 
-    if (prevState.imgName !== this.state.imgName && this.state.imgName !== '') {
-      this.setState({ imgArray: [], page: 1 });
+    if (prevState.images !== images && images !== '') {
+      this.setState({ images: [], page: 1 });
       this.loadImages();
     }
-    if (prevState.page !== this.state.page && this.state.page !== 1) {
+    if (prevState.page !== page && page !== 1) {
       this.loadImages();
     }
   }
@@ -41,27 +40,27 @@ export class App extends Component {
     const { page, imgName } = this.state;
     this.setState({ loading: true, error: null });
     fetchImages(imgName, page)
-      .then(images => {
+      .then(images=> {
         const pictures = images.hits.map(
           ({ id, webformatURL, tags, largeImg }) =>
             ({ id, webformatURL, tags, largeImg })
         );
 
-        if (imgName.hits.length === 0) {
+        if (!images.hits.length) {
+          console.log("Do not find");
           return this.setState({
-            error: `Do not find ${imgName}`,
-            status: 'rejected',
+            error: `Do not find ${images}`,
           });
         }
         
         return this.setState(prevState => ({
-          imgArray: [...prevState.imgArray, ...pictures], 
-          // totalImg: imgArray.totalHits,
+          images: [...prevState.images, ...pictures], 
+          totalImg: images.totalHits,
         })
         );
       })
-      .catch(err => this.setState({ error: err}));
-      
+      .catch(err => this.setState({ error: err}))
+      .finally(() => this.setState({ loading: false }));
   };
   
   toggleModal = (e) => {
@@ -84,28 +83,27 @@ export class App extends Component {
     this.setState({
       imgName: imgName,
       page: 1,
-      imgArray: []
+      images: []
     });
   };
 
   handleButton = () => {
-    this.setState(prev => ({
-      page: prev.page + 1,
+    this.setState(prevState => ({
+      page: prevState.page + 1,
     })
     );
   };
 
   render() {
-    const { error, imgArray, showModal, modalImg, tags, loading, totalImg} = this.state;
+    const { error, images, showModal, modalImg, tags, loading, totalImg} = this.state;
 
 
       return (
         <div className={s.app}>
           <SearchBar onSubmit={this.handlerSubmit} />
-          <ImageGallery images={imgArray} onClick={this.toggleModal} />
+          <ImageGallery images={images} onClick={this.toggleModal} />
           {loading && <Loader />}
-          {/* <p style={{ textAlign: 'center', fontSize: 30 }}>Loading...</p> */}
-          {imgArray.length > 0 && imgArray.length < totalImg && (
+          {images.length > 0 && images.length < totalImg && (
             <Button loadImages={this.handleButton} />)}
           {showModal && (
             <Modal

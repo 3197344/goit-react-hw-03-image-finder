@@ -3,17 +3,17 @@ import PropTypes from "prop-types";
 import s from '../Button/Button.module.css';
 
 
-export default function Button({loadImages}) {
+export default function Button({handleButton}) {
     return (<>
         <button
             type="button"
             className={s.Button}
-            onClick={loadImages}>
+            onClick={handleButton}>
             Load more...
         </button></>
     );
 };
 
 Button.propTypes = {
-    onClick: PropTypes.func,
+    handleButton: PropTypes.func,
 }
