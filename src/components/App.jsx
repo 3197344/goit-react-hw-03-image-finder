@@ -100,7 +100,7 @@ export class App extends Component {
 
       return (
         <div className={s.app}>
-          <SearchBar onSubmit={this.handlerSubmit} />
+          <SearchBar handlerSubmit={this.handlerSubmit} />
           <ImageGallery images={images} onClick={this.toggleModal} />
           {loading && <Loader />}
           {images.length > 0 && images.length < totalImg && (

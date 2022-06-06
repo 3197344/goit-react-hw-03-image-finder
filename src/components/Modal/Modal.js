@@ -8,6 +8,7 @@ export class Modal extends Component {
     static propTypes = {
     onClose: PropTypes.func.isRequired,
     modalImg: PropTypes.string.isRequired,
+    tags: PropTypes.string.isRequired,
     };
 
     componentDidMount() {
@@ -31,18 +32,20 @@ export class Modal extends Component {
     };
 
     render() {
-        const { modalImg} = this.props;
+        const { modalImg, tags} = this.props;
         return (
-            <div className={s.overlay}
-                onClick={this.handleBackdropClick}>
-                <div className={s.modal}>
-                    <img
-                        src={modalImg}
-                        alt="img"/>
+            <>
+                <div className={s.overlay}
+                    onClick={this.handleBackdropClick}>
+                    <div className={s.modal}>
+                        <img
+                            src={modalImg}
+                            alt={tags} />
+                    </div>
                 </div>
-            </div>         
-            )
-        }
+            </>
+        );
     };
+};
 
 export default Modal;

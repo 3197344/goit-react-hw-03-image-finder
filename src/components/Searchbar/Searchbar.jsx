@@ -4,35 +4,46 @@ import PropTypes from 'prop-types';
 import s from "../Searchbar/Searchbar.module.css";
 
 export class SearchBar extends Component {
-    
-    static propTypes = {
-        onSubmit: PropTypes.func
-    };
-
     state = {
         searchInput: '',
     };
-
-    handlerSubmit = e => {
-    e.preventDefault();
-
-    if (this.state.searchInput.trim() === '') {
-        return alert('Enter a query to search');
-    // return toast.error('Enter a query to search ');
-        }
-        
-    this.props.onSubmit(this.state.searchInput);
-    this.setState({ searchInput: '' }); //очистка инпута
+    
+    static propTypes = {
+        handlerSubmit: PropTypes.func.isRequired,
     };
 
-    handlerOnChange = e => {
+    handleSearch = e => {
     this.setState({ searchInput: e.currentTarget.value.toLowerCase() });
     };
 
+    onSubmit = e => {
+        e.preventDefault();
+        const { searchInput } = this.state;
+        const { handlerSubmit } = this.props;
+        if (searchInput.trim() === '') {
+            return alert('Enter a query to search');
+            // return toast.error('Enter a query to search ');
+        }
+        handlerSubmit(searchInput);
+    };
+
     render() {
+        const { searchInput } = this.state;
         return (
             <header className={s.Searchbar}>
-                <form  className={s.SearchForm} onSubmit={this.handlerSubmit}>
+                <form
+                    className={s.SearchForm}
+                    onSubmit={this.onSubmit}>
+                    <input
+                        className={s.SearchFormInput}
+                        type="text"
+                        autoComplete="off"
+                        autoFocus
+                        placeholder="Search images and photos"
+                        value={searchInput }
+                        onChange={this.handleSearch}
+                    />
+
                     <button
                         type="submit"
                         className={s.SearchFormButton}
@@ -41,16 +52,6 @@ export class SearchBar extends Component {
                             className={s.SearchFormButtonLabel}>
                             Search</span>
                     </button>
-
-                    <input
-                        className={s.SearchFormInput}
-                        type="text"
-                        autoComplete="off"
-                        autoFocus
-                        placeholder="Search images and photos"
-                        
-                        onChange={this.handlerOnChange}
-                    />
                 </form>
             </header>
         );
