@@ -25,9 +25,9 @@ export class App extends Component {
   };
 
   componentDidUpdate(prevProps, prevState) {
-    const { images, page } = this.state;
+    const { imgName, page } = this.state;
 
-    if (prevState.images !== images && images !== '') {
+    if (prevState.imgName !== imgName && imgName !== '') {
       this.setState({ images: [], page: 1 });
       this.loadImages();
     }
